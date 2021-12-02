@@ -31,7 +31,11 @@ exports.getAllProducts = async(req,res)=>{
     let limit = 5,currentPage = req.query.page || 1,
     skip = (currentPage - 1) * limit;
     try{
-     const products = await Product.find().limit(limit).skip(skip);
+     const products = await Product.find()
+     .limit(limit)
+     .skip(skip)
+     .populate('category','name _id')
+     .select('-__v -createdAt -updatedAt');
      res.status(200).json(products)
     }catch(err){
        console.log(err);
@@ -41,7 +45,7 @@ exports.getAllProducts = async(req,res)=>{
 exports.getSingleProduct = async (req,res,next)=>{
 
     try{
-    const product = await Product.findById({_id:req.params.id});
+    const product = await Product.findById({_id:req.params.id}).select('-__v -createdAt -updatedAt');
     if(!product){
       console.log("Product not found")
     }
